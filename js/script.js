@@ -368,9 +368,11 @@ function updateFavoritesBadge() {
     if (favorites.length > 0) {
         badge.textContent = favorites.length;
         badge.style.display = 'flex';
+        badge.style.background = '#e74c3c';
         icon.style.color = '#e74c3c';
     } else {
         badge.style.display = 'none';
+        badge.style.background = '';
         icon.style.color = '';
     }
 }
@@ -439,9 +441,11 @@ function updateCompareBadge() {
     if (compare.length > 0) {
         badge.textContent = compare.length;
         badge.style.display = 'flex';
+        badge.style.background = '#27ae60';
         icon.style.color = '#27ae60';
     } else {
         badge.style.display = 'none';
+        badge.style.background = '';
         icon.style.color = '';
     }
 }
