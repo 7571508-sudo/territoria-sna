@@ -2,10 +2,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebas
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCZfUqsbiUW6NN4mJNHLSxiyPZ3JjsHnoM",
-    authDomain: "territoria-sna.firebaseapp.com",
-    projectId: "territoria-sna",
-    storageBucket: "territoria-sna.firebasestorage.app",
+    apiKey: "AIzaSyCZfUqsbiU6NN4mJNHLSxiyPZ3JjsHnoM",
+    authDomain: "территория-сна.firebaseapp.com",
+    projectId: "территория-сна",
+    storageBucket: "территория-сна.firebasestorage.app",
     messagingSenderId: "902541396461",
     appId: "1:902541396461:web:6cda9eef3cf16b10d63fe4"
 };
