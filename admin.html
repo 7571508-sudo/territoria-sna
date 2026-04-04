@@ -1235,7 +1235,11 @@
             }
         ];
 
-        let products = [...defaultProducts];
+        let products = JSON.parse(localStorage.getItem('nexusProducts')) || [...defaultProducts];
+
+        if (!localStorage.getItem('nexusProducts')) {
+            localStorage.setItem('nexusProducts', JSON.stringify([...defaultProducts]));
+        }
 
         let deleteProductId = null;
 
