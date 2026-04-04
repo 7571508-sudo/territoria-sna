@@ -1,6 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js"></script>
+<script>
 const firebaseConfig = {
     apiKey: "AIzaSyCZfUqsbiUW6NN4mJNHLSxiyPZ3JjsHnoM",
     authDomain: "territoria-sna.firebaseapp.com",
@@ -10,8 +10,7 @@ const firebaseConfig = {
     appId: "1:902541396461:web:6cda9eef3cf16b10d63fe4"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app = firebase.initializeApp(firebaseConfig);
 
 const imageMap = {
     '80x190': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop',
@@ -94,14 +93,14 @@ const priceFilter = document.getElementById('priceFilter');
 
 async function loadProducts() {
     try {
-        const docRef = doc(db, "products", "all");
-        const docSnap = await getDoc(docRef);
+        const docRef = firebase.firestore().doc("products/all");
+        const docSnap = await docRef.get();
         
-        if (docSnap.exists()) {
+        if (docSnap.exists) {
             products = docSnap.data().items;
         } else {
             products = [...defaultProducts];
-            await setDoc(docRef, { items: products });
+            await docRef.set({ items: products });
         }
         renderProducts();
     } catch (e) {
