@@ -1252,15 +1252,22 @@
         let deleteProductId = null;
 
         async function loadProducts() {
+            if (typeof firebase === 'undefined') {
+                setTimeout(loadProducts, 500);
+                return;
+            }
             try {
+                showToast('Загрузка товаров...');
                 const docRef = firebase.firestore().doc("products/all");
                 const docSnap = await docRef.get();
                 
                 if (docSnap.exists) {
                     products = docSnap.data().items;
+                    showToast('Загружено ' + products.length + ' товаров');
                 } else {
                     products = [...defaultProducts];
                     await docRef.set({ items: products });
+                    showToast('Создана база товаров');
                 }
                 renderProductsTable();
             } catch (e) {
@@ -1271,6 +1278,10 @@
         }
 
         async function saveToStorage() {
+            if (typeof firebase === 'undefined') {
+                showToast('Подождите, загружается...');
+                return;
+            }
             try {
                 const docRef = firebase.firestore().doc("products/all");
                 await docRef.set({ items: products });

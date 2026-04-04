@@ -92,6 +92,10 @@ const hardnessFilter = document.getElementById('hardnessFilter');
 const priceFilter = document.getElementById('priceFilter');
 
 async function loadProducts() {
+    if (typeof firebase === 'undefined') {
+        setTimeout(loadProducts, 500);
+        return;
+    }
     try {
         const docRef = firebase.firestore().doc("products/all");
         const docSnap = await docRef.get();
