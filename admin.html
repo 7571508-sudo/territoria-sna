@@ -1280,9 +1280,15 @@
 
         async function saveToStorage() {
             try {
+                if (!window.firebaseDb) {
+                    console.error("Firebase not loaded");
+                    return;
+                }
                 await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "products", "all"), { items: products });
+                showToast('Сохранено в базу данных!');
             } catch (e) {
                 console.error("Save error:", e);
+                showToast('Ошибка сохранения');
             }
         }
 
