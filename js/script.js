@@ -364,11 +364,14 @@ window.toggleFavorite = function(id) {
 
 function updateFavoritesBadge() {
     const badge = document.getElementById('favoritesBadge');
+    const icon = document.getElementById('favoritesBtnIcon');
     if (favorites.length > 0) {
         badge.textContent = favorites.length;
         badge.style.display = 'flex';
+        icon.style.color = '#e74c3c';
     } else {
         badge.style.display = 'none';
+        icon.style.color = '';
     }
 }
 
@@ -432,11 +435,14 @@ window.toggleCompare = function(id) {
 
 function updateCompareBadge() {
     const badge = document.getElementById('compareBadge');
+    const icon = document.getElementById('compareBtnIcon');
     if (compare.length > 0) {
         badge.textContent = compare.length;
         badge.style.display = 'flex';
+        icon.style.color = '#27ae60';
     } else {
         badge.style.display = 'none';
+        icon.style.color = '';
     }
 }
 
