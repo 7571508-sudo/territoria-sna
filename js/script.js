@@ -122,7 +122,7 @@ function renderProducts() {
                     <span class="price-current">${product.salePrice.toFixed(2)} <small>BYN</small></span>
                 </div>
                 <div class="product-installment">от ${(product.salePrice / 36).toFixed(2)} BYN/мес. (36 мес.)</div>
-                <button class="btn-add" onclick="addToCart(${product.id})" ${!product.inStock ? 'disabled' : ''}>
+                <button class="btn-add" onclick="event.stopPropagation(); addToCart(${product.id})" ${!product.inStock ? 'disabled' : ''}>
                     ${product.inStock ? '<i class="fas fa-cart-plus"></i> В корзину' : 'Нет в наличии'}
                 </button>
             </div>
