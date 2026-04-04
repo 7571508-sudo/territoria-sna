@@ -262,6 +262,10 @@ function removeFromCart(productId) {
     cart = cart.filter(item => item.id !== productId);
     saveCart();
     updateCart();
+    if (cart.length === 0) {
+        cartSidebar.classList.remove('open');
+        overlay.classList.remove('show');
+    }
 }
 
 function changeCartQty(productId, delta) {
@@ -351,6 +355,10 @@ window.toggleFavorite = function(id) {
     renderProducts();
     if (favoritesSidebar.classList.contains('show')) {
         renderFavorites();
+        if (favorites.length === 0) {
+            favoritesSidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
     }
 };
 
@@ -415,6 +423,10 @@ window.toggleCompare = function(id) {
     renderProducts();
     if (compareSidebar.classList.contains('show')) {
         renderCompare();
+        if (compare.length === 0) {
+            compareSidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
     }
 };
 
