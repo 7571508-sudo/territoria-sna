@@ -498,3 +498,5 @@ renderProducts();
 updateCart();
 updateFavoritesBadge();
 updateCompareBadge();
+
+console.log('Products loaded:', products.length);
