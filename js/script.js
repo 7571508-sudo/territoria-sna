@@ -39,13 +39,11 @@ const defaultProducts = [
     { id: 29, name: "Территория сна Галактика", article: "M0332338", size: "160x200", price: 920.00, salePrice: 749.00, discount: 19, specs: "независимые пружины, 7 зон, средний", height: "22 см", spring: "независимые пружины", zones: 7, hardness: "средний", maxLoad: "130 кг", cover: "трикотаж", inStock: true, color: "#f093fb", image: "" }
 ];
 
-let products = JSON.parse(localStorage.getItem('nexusProducts')) || defaultProducts;
+let products = defaultProducts;
 
-if (!localStorage.getItem('nexusProducts')) {
-    localStorage.setItem('nexusProducts', JSON.stringify(defaultProducts));
-}
 let favorites = JSON.parse(localStorage.getItem('nexusFavorites')) || [];
 let compare = JSON.parse(localStorage.getItem('nexusCompare')) || [];
+let cart = JSON.parse(localStorage.getItem('nexusCart')) || [];
 
 const productsGrid = document.getElementById('productsGrid');
 const cartSidebar = document.getElementById('cartSidebar');
