@@ -1280,15 +1280,17 @@
 
         async function saveToStorage() {
             try {
-                if (!window.firebaseDb) {
-                    console.error("Firebase not loaded");
+                if (!window.firebaseDb || !window.firebaseDoc || !window.firebaseSetDoc) {
+                    console.error("Firebase not ready:", window.firebaseDb, window.firebaseDoc, window.firebaseSetDoc);
+                    showToast('Firebase не загружен');
                     return;
                 }
-                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "products", "all"), { items: products });
+                const docRef = window.firebaseDoc(window.firebaseDb, "products", "all");
+                await window.firebaseSetDoc(docRef, { items: products });
                 showToast('Сохранено в базу данных!');
             } catch (e) {
                 console.error("Save error:", e);
-                showToast('Ошибка сохранения');
+                showToast('Ошибка: ' + e.message);
             }
         }
 
