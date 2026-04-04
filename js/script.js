@@ -66,6 +66,9 @@ const sizeFilter = document.getElementById('sizeFilter');
 const hardnessFilter = document.getElementById('hardnessFilter');
 const priceFilter = document.getElementById('priceFilter');
 
+console.log('DOM elements:', !!productsGrid, !!sizeFilter, !!hardnessFilter, !!priceFilter);
+console.log('Products:', products.length);
+
 function renderProducts() {
     let filtered = [...products];
 
