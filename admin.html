@@ -6,6 +6,27 @@
     <title>Админ-панель - NEXUS Store</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCZfUqsbiUW6NN4mJNHLSxiyPZ3JjsHnoM",
+            authDomain: "territoria-sna.firebaseapp.com",
+            projectId: "territoria-sna",
+            storageBucket: "territoria-sna.firebasestorage.app",
+            messagingSenderId: "902541396461",
+            appId: "1:902541396461:web:6cda9eef3cf16b10d63fe4"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        window.firebaseDb = db;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseGetDoc = getDoc;
+    </script>
 </head>
 <body class="admin-body">
     <div class="admin-container">
@@ -1235,16 +1256,34 @@
             }
         ];
 
-        let products = JSON.parse(localStorage.getItem('nexusProducts')) || [...defaultProducts];
-
-        if (!localStorage.getItem('nexusProducts')) {
-            localStorage.setItem('nexusProducts', JSON.stringify([...defaultProducts]));
-        }
-
+        let products = [];
         let deleteProductId = null;
 
-        function saveToStorage() {
-            localStorage.setItem('nexusProducts', JSON.stringify(products));
+        async function loadProducts() {
+            try {
+                const docRef = window.firebaseDoc(window.firebaseDb, "products", "all");
+                const docSnap = await window.firebaseGetDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    products = docSnap.data().items;
+                } else {
+                    products = [...defaultProducts];
+                    await window.firebaseSetDoc(docRef, { items: products });
+                }
+                renderProductsTable();
+            } catch (e) {
+                console.error("Error:", e);
+                products = [...defaultProducts];
+                renderProductsTable();
+            }
+        }
+
+        async function saveToStorage() {
+            try {
+                await window.firebaseSetDoc(window.firebaseDoc(window.firebaseDb, "products", "all"), { items: products });
+            } catch (e) {
+                console.error("Save error:", e);
+            }
         }
 
         function renderProductsTable() {
@@ -1430,7 +1469,7 @@
             }
         }
 
-        renderProductsTable();
+        loadProducts();
     </script>
 </body>
 </html>
