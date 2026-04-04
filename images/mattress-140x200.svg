@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="mattress4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#43e97b"/>
+      <stop offset="100%" style="stop-color:#38f9d7"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="95" width="380" height="130" rx="18" fill="url(#mattress4)"/>
+  <rect x="20" y="105" width="360" height="110" rx="12" fill="white" opacity="0.15"/>
+  <rect x="25" y="110" width="350" height="100" rx="10" fill="white" opacity="0.2"/>
+  <rect x="30" y="115" width="340" height="90" rx="8" fill="white" opacity="0.25"/>
+  <text x="200" y="168" text-anchor="middle" fill="white" font-family="Arial" font-size="14" font-weight="bold">140x200</text>
+</svg>
