@@ -210,7 +210,6 @@ window.openProductModal = function(productId) {
 }
 
 let modalQty = 1;
-let cart = JSON.parse(localStorage.getItem('nexusCart')) || [];
 
 window.changeModalQty = function(delta) {
     modalQty = Math.max(1, modalQty + delta);
