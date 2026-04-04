@@ -106,10 +106,10 @@ function renderProducts() {
                 ${product.discount > 0 ? `<span class="product-badge">-${product.discount}%</span>` : ''}
                 <div class="product-actions" onclick="event.stopPropagation()">
                     <button onclick="toggleFavorite(${product.id})" title="В избранное">
-                        <i class="far fa-heart"></i>
+                        <i class="${favorites.includes(product.id) ? 'fas' : 'far'} fa-heart" ${favorites.includes(product.id) ? 'style="color: #e74c3c;"' : ''}></i>
                     </button>
                     <button onclick="toggleCompare(${product.id})" title="К сравнению">
-                        <i class="fas fa-balance-scale"></i>
+                        <i class="fas fa-balance-scale" ${compare.includes(product.id) ? 'style="color: #27ae60;"' : ''}></i>
                     </button>
                 </div>
             </div>
