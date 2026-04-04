@@ -51,7 +51,11 @@ const defaultProducts = [
     { id: 39, name: "Территория сна Подушка Элит", article: "P0012349", category: "pillows", size: "40x60", price: 165.00, salePrice: 129.00, discount: 22, specs: "анатомическая, гелевые частицы", height: "12 см", spring: "", zones: 1, hardness: "средний", maxLoad: "", cover: "трикотаж", inStock: true, color: "#667eea", image: "" }
 ];
 
-let products = defaultProducts;
+let products = JSON.parse(localStorage.getItem('nexusProducts')) || defaultProducts;
+
+if (!localStorage.getItem('nexusProducts')) {
+    localStorage.setItem('nexusProducts', JSON.stringify(defaultProducts));
+}
 
 let favorites = JSON.parse(localStorage.getItem('nexusFavorites')) || [];
 let compare = JSON.parse(localStorage.getItem('nexusCompare')) || [];
