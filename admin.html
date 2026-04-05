@@ -1294,7 +1294,11 @@
                 await batch.commit();
                 
                 for (const p of products) {
-                    await collRef.doc(String(p.id)).set(p);
+                    let productData = {...p};
+                    if (productData.image && productData.image.length > 500) {
+                        productData.image = "";
+                    }
+                    await collRef.doc(String(productData.id)).set(productData);
                 }
                 
                 showToast('Сохранено ' + products.length + ' товаров!');
