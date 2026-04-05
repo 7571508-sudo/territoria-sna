@@ -1249,6 +1249,21 @@
         let products = [];
 
         async function loadProducts() {
+            const client = getSupabaseClient();
+            if (client) {
+                try {
+                    const { data, error } = await client.from('products').select('*').order('id');
+                    if (data && data.length > 0) {
+                        products = data;
+                        localStorage.setItem('nexusProducts', JSON.stringify(products));
+                        renderProductsTable();
+                        return;
+                    }
+                } catch (e) {
+                    console.log('Supabase error, using local');
+                }
+            }
+            
             const localData = localStorage.getItem('nexusProducts');
             if (localData) {
                 products = JSON.parse(localData);
@@ -1258,23 +1273,10 @@
             }
             renderProductsTable();
             
-            try {
-                const { data, error } = await getSupabaseClient()
-                    .from('products')
-                    .select('*')
-                    .order('id');
-                
-                if (data && data.length > 0) {
-                    products = data;
-                    localStorage.setItem('nexusProducts', JSON.stringify(products));
-                    renderProductsTable();
-                } else if (products.length > 0) {
-                    for (const p of products) {
-                        await getSupabaseClient().from('products').upsert(p);
-                    }
+            if (client && products.length > 0) {
+                for (const p of products) {
+                    await client.from('products').upsert(p);
                 }
-            } catch (e) {
-                console.log('Using local data, Supabase not available');
             }
         }
 
@@ -1486,33 +1488,6 @@
         }
 
         loadProducts();
-        
-        const waitForSupabase = setInterval(() => {
-            if (window.supabaseJs && window.supabaseJs.createClient) {
-                clearInterval(waitForSupabase);
-                syncProductsToSupabase();
-            }
-        }, 500);
-        
-        async function syncProductsToSupabase() {
-            const client = getSupabaseClient();
-            if (!client) return;
-            
-            try {
-                const { data } = await client.from('products').select('*').order('id');
-                if (data && data.length > 0) {
-                    products = data;
-                    localStorage.setItem('nexusProducts', JSON.stringify(products));
-                    renderProductsTable();
-                } else if (products.length > 0) {
-                    for (const p of products) {
-                        await client.from('products').upsert(p);
-                    }
-                }
-            } catch (e) {
-                console.log('Sync error:', e);
-            }
-        }
     </script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </body>
