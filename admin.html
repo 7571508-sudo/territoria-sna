@@ -643,11 +643,12 @@
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabaseDbUrl = 'https://nrmsvdthaphzlnreavwx.supabaseDb.co';
+        const supabaseDbUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
         const supabaseDbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
-        const { createClient } = supabaseDbJs;
-        const supabaseDbDb = createClient(supabaseDbUrl, supabaseDbKey);
+        const { createClient } = supabaseJs;
+        const supabaseDb = createClient(supabaseDbUrl, supabaseDbKey);
 
         const imageMap = {
             '80x190': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop',
@@ -1241,9 +1242,9 @@
             }
         ];
 
-        const supabaseDbUrl = 'https://nrmsvdthaphzlnreavwx.supabaseDb.co';
+        const supabaseDbUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
         const supabaseDbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
-        const { createClient } = supabaseDbJs;
+        const { createClient } = supabaseJs;
         const supabaseDb = createClient(supabaseDbUrl, supabaseDbKey);
 
         let products = [];
