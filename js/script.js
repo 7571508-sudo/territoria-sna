@@ -62,6 +62,22 @@ let products = [];
 let loading = true;
 
 async function loadProducts() {
+    const client = getSupabaseClient();
+    if (client) {
+        try {
+            const { data, error } = await client.from('products').select('*').order('id');
+            if (data && data.length > 0) {
+                products = data;
+                localStorage.setItem('nexusProducts', JSON.stringify(products));
+                renderProducts();
+                loading = false;
+                return;
+            }
+        } catch (e) {
+            console.log('Supabase error, using local');
+        }
+    }
+    
     const localData = localStorage.getItem('nexusProducts');
     if (localData) {
         products = JSON.parse(localData);
@@ -71,25 +87,19 @@ async function loadProducts() {
     }
     renderProducts();
     
-    try {
-        const { data, error } = await supabase
-            .from('products')
-            .select('*')
-            .order('id');
-        
-        if (data && data.length > 0) {
-            products = data;
-            localStorage.setItem('nexusProducts', JSON.stringify(products));
-            renderProducts();
-        } else if (products.length > 0) {
-            for (const p of products) {
-                await supabase.from('products').upsert(p);
-            }
+    if (client && products.length > 0) {
+        for (const p of products) {
+            await client.from('products').upsert(p);
         }
-    } catch (e) {
-        console.log('Using local data, Supabase not available');
     }
     loading = false;
+}
+
+function getSupabaseClient() {
+    if (window.supabaseJs && window.supabaseJs.createClient) {
+        return window.supabaseJs.createClient(supabaseUrl, supabaseKey);
+    }
+    return null;
 }
 
 let favorites = JSON.parse(localStorage.getItem('nexusFavorites')) || [];
