@@ -6,7 +6,6 @@
     <title>Админ-панель - Территория Сна</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body class="admin-body">
     <div class="admin-container">
@@ -1238,7 +1237,14 @@
 
         const supabaseUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
-        const supabaseDb = window.supabaseJs.createClient(supabaseUrl, supabaseKey);
+        let getSupabaseClient() = null;
+
+        function getSupabaseClient() {
+            if (!getSupabaseClient() && window.supabaseJs) {
+                getSupabaseClient() = window.supabaseJs.createClient(supabaseUrl, supabaseKey);
+            }
+            return getSupabaseClient();
+        }
 
         let products = [];
 
@@ -1253,7 +1259,7 @@
             renderProductsTable();
             
             try {
-                const { data, error } = await supabaseDb
+                const { data, error } = await getSupabaseClient()
                     .from('products')
                     .select('*')
                     .order('id');
@@ -1264,7 +1270,7 @@
                     renderProductsTable();
                 } else if (products.length > 0) {
                     for (const p of products) {
-                        await supabaseDb.from('products').upsert(p);
+                        await getSupabaseClient().from('products').upsert(p);
                     }
                 }
             } catch (e) {
@@ -1284,7 +1290,7 @@
                 }));
                 
                 for (const p of productData) {
-                    await supabaseDb.from('products').upsert(p);
+                    await getSupabaseClient().from('products').upsert(p);
                 }
             } catch (e) {
                 console.error('Error saving to Supabase:', e);
@@ -1481,5 +1487,6 @@
 
         loadProducts();
     </script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </body>
 </html>
