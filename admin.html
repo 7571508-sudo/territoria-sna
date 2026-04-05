@@ -1239,8 +1239,7 @@
 
         const supabaseUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
-        const { createClient } = supabaseJs;
-        const supabaseDb = createClient(supabaseUrl, supabaseKey);
+        const supabaseDb = window.supabaseJs.createClient(supabaseUrl, supabaseKey);
 
         let products = [];
 
