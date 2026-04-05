@@ -1237,7 +1237,7 @@
         ];
 
         const supabaseUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNzkxNTIsImV4cCI6MjA5MDk1NTE1Mn0.__TLwnbj3rOnpelmlRXROnXhpqMu8K7Gu-V3mNqZ40s';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
         const { createClient } = supabaseJs;
         const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -1252,7 +1252,10 @@
                     .select('*')
                     .order('id');
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
                 products = data || [];
                 
                 if (products.length === 0) {
@@ -1262,11 +1265,23 @@
                         for (const p of products) {
                             await supabase.from('products').upsert(p);
                         }
+                    } else {
+                        products = [...defaultProducts];
+                        localStorage.setItem('nexusProducts', JSON.stringify(products));
+                        for (const p of products) {
+                            await supabase.from('products').upsert(p);
+                        }
                     }
                 }
             } catch (e) {
                 console.error('Error loading from Supabase:', e);
-                products = localStorage.getItem('nexusProducts') ? JSON.parse(localStorage.getItem('nexusProducts')) : [];
+                const localData = localStorage.getItem('nexusProducts');
+                if (localData) {
+                    products = JSON.parse(localData);
+                } else {
+                    products = [...defaultProducts];
+                    localStorage.setItem('nexusProducts', JSON.stringify(products));
+                }
             }
             loading = false;
             renderProductsTable();
