@@ -1242,49 +1242,35 @@
         const supabase = createClient(supabaseUrl, supabaseKey);
 
         let products = [];
-        let loading = true;
 
         async function loadProducts() {
-            loading = true;
+            const localData = localStorage.getItem('nexusProducts');
+            if (localData) {
+                products = JSON.parse(localData);
+            } else {
+                products = [...defaultProducts];
+                localStorage.setItem('nexusProducts', JSON.stringify(products));
+            }
+            renderProductsTable();
+            
             try {
                 const { data, error } = await supabase
                     .from('products')
                     .select('*')
                     .order('id');
                 
-                if (error) {
-                    console.error('Supabase error:', error);
-                    throw error;
-                }
-                products = data || [];
-                
-                if (products.length === 0) {
-                    const localData = localStorage.getItem('nexusProducts');
-                    if (localData) {
-                        products = JSON.parse(localData);
-                        for (const p of products) {
-                            await supabase.from('products').upsert(p);
-                        }
-                    } else {
-                        products = [...defaultProducts];
-                        localStorage.setItem('nexusProducts', JSON.stringify(products));
-                        for (const p of products) {
-                            await supabase.from('products').upsert(p);
-                        }
+                if (data && data.length > 0) {
+                    products = data;
+                    localStorage.setItem('nexusProducts', JSON.stringify(products));
+                    renderProductsTable();
+                } else if (products.length > 0) {
+                    for (const p of products) {
+                        await supabase.from('products').upsert(p);
                     }
                 }
             } catch (e) {
-                console.error('Error loading from Supabase:', e);
-                const localData = localStorage.getItem('nexusProducts');
-                if (localData) {
-                    products = JSON.parse(localData);
-                } else {
-                    products = [...defaultProducts];
-                    localStorage.setItem('nexusProducts', JSON.stringify(products));
-                }
+                console.log('Using local data, Supabase not available');
             }
-            loading = false;
-            renderProductsTable();
         }
 
         let deleteProductId = null;

@@ -62,26 +62,34 @@ let products = [];
 let loading = true;
 
 async function loadProducts() {
-    loading = true;
+    const localData = localStorage.getItem('nexusProducts');
+    if (localData) {
+        products = JSON.parse(localData);
+    } else {
+        products = [...defaultProducts];
+        localStorage.setItem('nexusProducts', JSON.stringify(products));
+    }
+    renderProducts();
+    
     try {
         const { data, error } = await supabase
             .from('products')
             .select('*')
             .order('id');
         
-        if (error) throw error;
-        products = data || [];
-        
-        if (products.length === 0) {
-            products = [...defaultProducts];
+        if (data && data.length > 0) {
+            products = data;
             localStorage.setItem('nexusProducts', JSON.stringify(products));
+            renderProducts();
+        } else if (products.length > 0) {
+            for (const p of products) {
+                await supabase.from('products').upsert(p);
+            }
         }
     } catch (e) {
-        console.error('Error loading from Supabase:', e);
-        products = localStorage.getItem('nexusProducts') ? JSON.parse(localStorage.getItem('nexusProducts')) : [...defaultProducts];
+        console.log('Using local data, Supabase not available');
     }
     loading = false;
-    renderProducts();
 }
 
 let favorites = JSON.parse(localStorage.getItem('nexusFavorites')) || [];
