@@ -1293,12 +1293,9 @@
                 snapshot.forEach(doc => batch.delete(doc.ref));
                 await batch.commit();
                 
-                for (const p of products) {
-                    let productData = {...p};
-                    if (productData.image && productData.image.length > 500) {
-                        productData.image = "";
-                    }
-                    await collRef.doc(String(productData.id)).set(productData);
+                for (let i = 0; i < products.length; i++) {
+                    await collRef.doc(String(products[i].id)).set(products[i]);
+                    await new Promise(r => setTimeout(r, 100));
                 }
                 
                 showToast('Сохранено ' + products.length + ' товаров!');
