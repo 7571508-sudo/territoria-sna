@@ -1258,15 +1258,17 @@
             }
             try {
                 showToast('Загрузка товаров...');
-                const docRef = firebase.firestore().doc("products/all");
-                const docSnap = await docRef.get();
+                const collRef = firebase.firestore().collection("products");
+                const snapshot = await collRef.get();
                 
-                if (docSnap.exists) {
-                    products = docSnap.data().items;
+                if (snapshot.size > 0) {
+                    products = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
                     showToast('Загружено ' + products.length + ' товаров');
                 } else {
+                    for (const p of defaultProducts) {
+                        await collRef.doc(String(p.id)).set(p);
+                    }
                     products = [...defaultProducts];
-                    await docRef.set({ items: products });
                     showToast('Создана база товаров');
                 }
                 renderProductsTable();
@@ -1283,9 +1285,19 @@
                 return;
             }
             try {
-                const docRef = firebase.firestore().doc("products/all");
-                await docRef.set({ items: products });
-                showToast('Сохранено в базу данных!');
+                showToast('Сохранение...');
+                const collRef = firebase.firestore().collection("products");
+                
+                const snapshot = await collRef.get();
+                const batch = firebase.firestore().batch();
+                snapshot.forEach(doc => batch.delete(doc.ref));
+                await batch.commit();
+                
+                for (const p of products) {
+                    await collRef.doc(String(p.id)).set(p);
+                }
+                
+                showToast('Сохранено ' + products.length + ' товаров!');
             } catch (e) {
                 console.error("Save error:", e);
                 showToast('Ошибка: ' + e.message);

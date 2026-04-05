@@ -97,14 +97,16 @@ async function loadProducts() {
         return;
     }
     try {
-        const docRef = firebase.firestore().doc("products/all");
-        const docSnap = await docRef.get();
+        const collRef = firebase.firestore().collection("products");
+        const snapshot = await collRef.get();
         
-        if (docSnap.exists) {
-            products = docSnap.data().items;
+        if (snapshot.size > 0) {
+            products = snapshot.docs.map(d => ({id: parseInt(d.id), ...d.data()}));
         } else {
             products = [...defaultProducts];
-            await docRef.set({ items: products });
+            for (const p of defaultProducts) {
+                await collRef.doc(String(p.id)).set(p);
+            }
         }
         renderProducts();
     } catch (e) {
