@@ -6,7 +6,7 @@
     <title>Админ-панель - Территория Сна</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabaseDb/supabaseDb-js@2"></script>
 </head>
 <body class="admin-body">
     <div class="admin-container">
@@ -644,6 +644,11 @@
     </style>
 
     <script>
+        const supabaseDbUrl = 'https://nrmsvdthaphzlnreavwx.supabaseDb.co';
+        const supabaseDbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
+        const { createClient } = supabaseDbJs;
+        const supabaseDbDb = createClient(supabaseDbUrl, supabaseDbKey);
+
         const imageMap = {
             '80x190': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop',
             '90x190': 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=300&fit=crop',
@@ -1236,10 +1241,10 @@
             }
         ];
 
-        const supabaseUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
-        const { createClient } = supabaseJs;
-        const supabase = createClient(supabaseUrl, supabaseKey);
+        const supabaseDbUrl = 'https://nrmsvdthaphzlnreavwx.supabaseDb.co';
+        const supabaseDbKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTM3OTE1MiwiZXhwIjoyMDkwOTU1MTUyfQ.6v9Og4TtJ3RVtZyS5XcNQ4RUL59oBlh6APOWZ4_PBYA';
+        const { createClient } = supabaseDbJs;
+        const supabaseDb = createClient(supabaseDbUrl, supabaseDbKey);
 
         let products = [];
 
@@ -1254,7 +1259,7 @@
             renderProductsTable();
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await supabaseDb
                     .from('products')
                     .select('*')
                     .order('id');
@@ -1265,7 +1270,7 @@
                     renderProductsTable();
                 } else if (products.length > 0) {
                     for (const p of products) {
-                        await supabase.from('products').upsert(p);
+                        await supabaseDb.from('products').upsert(p);
                     }
                 }
             } catch (e) {
@@ -1285,7 +1290,7 @@
                 }));
                 
                 for (const p of productData) {
-                    await supabase.from('products').upsert(p);
+                    await supabaseDb.from('products').upsert(p);
                 }
             } catch (e) {
                 console.error('Error saving to Supabase:', e);
