@@ -1,16 +1,9 @@
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const firebaseConfig = {
-    apiKey: "AIzaSyCZfUqsbiUW6NN4mJNHLSxiyPZ3JjsHnoM",
-    authDomain: "territoria-sna.firebaseapp.com",
-    projectId: "territoria-sna",
-    storageBucket: "territoria-sna.firebasestorage.app",
-    messagingSenderId: "902541396461",
-    appId: "1:902541396461:web:6cda9eef3cf16b10d63fe4"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
+const supabaseUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNzkxNTIsImV4cCI6MjA5MDk1NTE1Mn0.__TLwnbj3rOnpelmlRXROnXhpqMu8K7Gu-V3mNqZ40s';
+const { createClient } = supabaseJs;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const imageMap = {
     '80x190': 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop',
@@ -66,6 +59,31 @@ const defaultProducts = [
 ];
 
 let products = [];
+let loading = true;
+
+async function loadProducts() {
+    loading = true;
+    try {
+        const { data, error } = await supabase
+            .from('products')
+            .select('*')
+            .order('id');
+        
+        if (error) throw error;
+        products = data || [];
+        
+        if (products.length === 0) {
+            products = [...defaultProducts];
+            localStorage.setItem('nexusProducts', JSON.stringify(products));
+        }
+    } catch (e) {
+        console.error('Error loading from Supabase:', e);
+        products = localStorage.getItem('nexusProducts') ? JSON.parse(localStorage.getItem('nexusProducts')) : [...defaultProducts];
+    }
+    loading = false;
+    renderProducts();
+}
+
 let favorites = JSON.parse(localStorage.getItem('nexusFavorites')) || [];
 let compare = JSON.parse(localStorage.getItem('nexusCompare')) || [];
 let cart = JSON.parse(localStorage.getItem('nexusCart')) || [];
@@ -90,31 +108,6 @@ const checkoutBtn = document.getElementById('checkoutBtn');
 const sizeFilter = document.getElementById('sizeFilter');
 const hardnessFilter = document.getElementById('hardnessFilter');
 const priceFilter = document.getElementById('priceFilter');
-
-async function loadProducts() {
-    if (typeof firebase === 'undefined') {
-        setTimeout(loadProducts, 500);
-        return;
-    }
-    try {
-        const collRef = firebase.firestore().collection("products");
-        const snapshot = await collRef.get();
-        
-        if (snapshot.size > 0) {
-            products = snapshot.docs.map(d => ({id: parseInt(d.id), ...d.data()}));
-        } else {
-            products = [...defaultProducts];
-            for (const p of defaultProducts) {
-                await collRef.doc(String(p.id)).set(p);
-            }
-        }
-        renderProducts();
-    } catch (e) {
-        console.error("Error loading products:", e);
-        products = [...defaultProducts];
-        renderProducts();
-    }
-}
 
 function renderProducts() {
     let filtered = [...products];
@@ -189,3 +182,4 @@ loadProducts();
 updateCart();
 updateFavoritesBadge();
 updateCompareBadge();
+</script>

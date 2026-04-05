@@ -3,22 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ-панель - NEXUS Store</title>
+    <title>Админ-панель - Территория Сна</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCZfUqsbiUW6NN4mJNHLSxiyPZ3JjsHnoM",
-            authDomain: "territoria-sna.firebaseapp.com",
-            projectId: "territoria-sna",
-            storageBucket: "territoria-sna.firebasestorage.app",
-            messagingSenderId: "902541396461",
-            appId: "1:902541396461:web:6cda9eef3cf16b10d63fe4"
-        };
-        firebase.initializeApp(firebaseConfig);
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="admin-body">
     <div class="admin-container">
@@ -174,7 +162,7 @@
                         <span class="or-text">или</span>
                         <input type="url" id="productImageUrl" placeholder="URL изображения" onchange="handleUrlInput(this.value)">
                     </div>
-                    <small>Загрузите фото с ПК (до 5MB) или вставьте URL</small>
+                    <small>Загрузите фото с ПК или вставьте URL</small>
                 </div>
 
                 <div class="form-group full-width">
@@ -1248,61 +1236,61 @@
             }
         ];
 
+        const supabaseUrl = 'https://nrmsvdthaphzlnreavwx.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ybXN2ZHRoYXBoemxucmVhdnd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzNzkxNTIsImV4cCI6MjA5MDk1NTE1Mn0.__TLwnbj3rOnpelmlRXROnXhpqMu8K7Gu-V3mNqZ40s';
+        const { createClient } = supabaseJs;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
         let products = [];
-        let deleteProductId = null;
+        let loading = true;
 
         async function loadProducts() {
-            if (typeof firebase === 'undefined') {
-                setTimeout(loadProducts, 500);
-                return;
-            }
+            loading = true;
             try {
-                showToast('Загрузка товаров...');
-                const collRef = firebase.firestore().collection("products");
-                const snapshot = await collRef.get();
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('id');
                 
-                if (snapshot.size > 0) {
-                    products = snapshot.docs.map(d => ({id: d.id, ...d.data()}));
-                    showToast('Загружено ' + products.length + ' товаров');
-                } else {
-                    for (const p of defaultProducts) {
-                        await collRef.doc(String(p.id)).set(p);
+                if (error) throw error;
+                products = data || [];
+                
+                if (products.length === 0) {
+                    const localData = localStorage.getItem('nexusProducts');
+                    if (localData) {
+                        products = JSON.parse(localData);
+                        for (const p of products) {
+                            await supabase.from('products').upsert(p);
+                        }
                     }
-                    products = [...defaultProducts];
-                    showToast('Создана база товаров');
                 }
-                renderProductsTable();
             } catch (e) {
-                console.error("Error:", e);
-                products = [...defaultProducts];
-                renderProductsTable();
+                console.error('Error loading from Supabase:', e);
+                products = localStorage.getItem('nexusProducts') ? JSON.parse(localStorage.getItem('nexusProducts')) : [];
             }
+            loading = false;
+            renderProductsTable();
         }
 
+        let deleteProductId = null;
+
         async function saveToStorage() {
-            if (typeof firebase === 'undefined') {
-                showToast('Подождите, загружается...');
-                return;
-            }
+            localStorage.setItem('nexusProducts', JSON.stringify(products));
+            
             try {
-                showToast('Сохранение...');
-                const collRef = firebase.firestore().collection("products");
+                const productData = products.map(p => ({
+                    ...p,
+                    image: p.image && p.image.startsWith('http') ? p.image : ''
+                }));
                 
-                const snapshot = await collRef.get();
-                const batch = firebase.firestore().batch();
-                snapshot.forEach(doc => batch.delete(doc.ref));
-                await batch.commit();
-                
-                for (let i = 0; i < products.length; i++) {
-                    await collRef.doc(String(products[i].id)).set(products[i]);
-                    await new Promise(r => setTimeout(r, 100));
+                for (const p of productData) {
+                    await supabase.from('products').upsert(p);
                 }
-                
-                showToast('Сохранено ' + products.length + ' товаров!');
             } catch (e) {
-                console.error("Save error:", e);
-                showToast('Ошибка: ' + e.message);
+                console.error('Error saving to Supabase:', e);
             }
+            
+            showToast('Сохранено!');
         }
 
         function renderProductsTable() {
@@ -1464,8 +1452,8 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            if (file.size > 5 * 1024 * 1024) {
-                showToast('Файл слишком большой! Максимум 5MB');
+            if (file.size > 10 * 1024 * 1024) {
+                showToast('Файл слишком большой! Максимум 10MB');
                 return;
             }
 
@@ -1474,6 +1462,9 @@
                 document.getElementById('productImage').value = e.target.result;
                 const preview = document.getElementById('imagePreview');
                 preview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+            };
+            reader.onerror = function() {
+                showToast('Ошибка чтения файла');
             };
             reader.readAsDataURL(file);
         }
